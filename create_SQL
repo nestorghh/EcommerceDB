@@ -1,0 +1,153 @@
+/*Author: Nestor Hernandez
+Date: 04/23/2017 12:38 am
+COP 5725 - Principles of DBMS
+*/
+
+/*Create database*/
+CREATE DATABASE ecommerce;
+
+/*Make sure you are under the ecommerce database just created to run the next SQL statements*/
+
+/*Create tables*/
+
+CREATE TABLE CUSTOMER
+(
+  Customer_id BIGINT NOT NULL,
+  Email VARCHAR(40) NOT NULL,
+  Phone VARCHAR(20) NOT NULL,
+  FName VARCHAR(20) NOT NULL,
+  LName VARCHAR(20) NOT NULL,
+  PRIMARY KEY (Customer_id)
+);
+
+CREATE TABLE ADDRESS
+(
+  Street VARCHAR(100) NOT NULL,
+  City VARCHAR(100) NOT NULL,
+  State VARCHAR(20) NOT NULL,
+  Zip INT NOT NULL,
+  Preferred BOOLEAN NOT NULL,
+  Address_id BIGINT NOT NULL,
+  Customer_id BIGINT NOT NULL,
+  PRIMARY KEY (Address_id),
+  FOREIGN KEY (Customer_id) REFERENCES CUSTOMER(Customer_id)
+);
+
+CREATE TABLE BILLING
+(
+  CHName VARCHAR(40) NOT NULL,
+  Card_number BIGINT NOT NULL,
+  ExpMonth INT NOT NULL,
+  ExpYear INT NOT NULL,
+  Preferred BOOLEAN NOT NULL,
+  csv INT NOT NULL,
+  Street VARCHAR(100) NOT NULL,
+  City VARCHAR(100) NOT NULL,
+  State VARCHAR(20) NOT NULL,
+  Zip INT NOT NULL,
+  Bill_id BIGINT NOT NULL,
+  Customer_id BIGINT NOT NULL,
+  PRIMARY KEY (Bill_id),
+  FOREIGN KEY (Customer_id) REFERENCES CUSTOMER(Customer_id)
+);
+
+CREATE TABLE SUPPLIER
+(
+  Supplier_id BIGINT NOT NULL,
+  ContactFName VARCHAR(40) NOT NULL,
+  ContactLName VARCHAR(40) NOT NULL,
+  Email VARCHAR(40) NOT NULL,
+  Phone VARCHAR(40) NOT NULL,
+  SupplierName VARCHAR(50) NOT NULL,
+  Street VARCHAR(100) NOT NULL,
+  City VARCHAR(100) NOT NULL,
+  State VARCHAR(20) NOT NULL,
+  Zip INT NOT NULL,
+  PRIMARY KEY (Supplier_id)
+);
+
+CREATE TABLE CHECKOUT
+(
+  Checkout_id BIGINT NOT NULL,
+  Check_date TIMESTAMP NOT NULL,
+  Total_price_usd FLOAT NOT NULL,
+  Discount_usd FLOAT NOT NULL,
+  Bill_id BIGINT NOT NULL,
+  Customer_id BIGINT NOT NULL,
+  Address_id BIGINT NOT NULL,
+  PRIMARY KEY (Checkout_id),
+  FOREIGN KEY (Bill_id) REFERENCES BILLING(Bill_id),
+  FOREIGN KEY (Customer_id) REFERENCES CUSTOMER(Customer_id),
+  FOREIGN KEY (Address_id) REFERENCES ADDRESS(Address_id)
+);
+
+CREATE TABLE PRODUCT_CATEGORY
+(
+  CatName VARCHAR(100) NOT NULL,
+  Cat_id BIGINT NOT NULL,
+  Parent_Cat_id BIGINT,
+  PRIMARY KEY (Cat_id),
+  FOREIGN KEY (Parent_Cat_id) REFERENCES PRODUCT_CATEGORY(Cat_id)
+);
+
+CREATE TABLE PRODUCT
+(
+  Product_id BIGINT NOT NULL,
+  PName VARCHAR(100) NOT NULL,
+  Description VARCHAR(200) NOT NULL,
+  Price_usd FLOAT NOT NULL,
+  Stock BIGINT NOT NULL,
+  Picture VARCHAR(900) NOT NULL,
+  Cat_id BIGINT NOT NULL,
+  PRIMARY KEY (Product_id),
+  FOREIGN KEY (Cat_id) REFERENCES PRODUCT_CATEGORY(Cat_id)
+);
+
+CREATE TABLE ITEM_CHECK
+(
+  Quantity INT NOT NULL,
+  Line_price_usd FLOAT NOT NULL,
+  Item_number BIGINT NOT NULL,
+  Discount_usd FLOAT NOT NULL,
+  Product_id BIGINT NOT NULL,
+  Checkout_id BIGINT NOT NULL,
+  PRIMARY KEY (Item_number, Product_id, Checkout_id),
+  FOREIGN KEY (Product_id) REFERENCES PRODUCT(Product_id),
+  FOREIGN KEY (Checkout_id) REFERENCES CHECKOUT(Checkout_id)
+);
+
+CREATE TABLE CART_ITEM
+(
+  Item_number INT NOT NULL,
+  Quantity INT NOT NULL,
+  Line_price_usd FLOAT NOT NULL,
+  Discount_usd FLOAT NOT NULL,
+  Product_id BIGINT NOT NULL,
+  Customer_id BIGINT NOT NULL,
+  PRIMARY KEY (Item_number, Product_id, Customer_id),
+  FOREIGN KEY (Product_id) REFERENCES PRODUCT(Product_id),
+  FOREIGN KEY (Customer_id) REFERENCES CUSTOMER(Customer_id)
+);
+
+CREATE TABLE PRICE_HISTORY
+(
+  Price_usd FLOAT NOT NULL,
+  Till_date DATE NOT NULL,
+  Hist_id BIGINT NOT NULL,
+  Product_id BIGINT NOT NULL,
+  PRIMARY KEY (Hist_id, Product_id),
+  FOREIGN KEY (Product_id) REFERENCES PRODUCT(Product_id)
+);
+
+
+CREATE TABLE SUPPLIES
+(
+  Price_usd FLOAT NOT NULL,
+  Date DATE NOT NULL,
+  Product_id BIGINT NOT NULL,
+  Supplier_id BIGINT NOT NULL,
+  PRIMARY KEY (Product_id, Supplier_id),
+  FOREIGN KEY (Product_id) REFERENCES PRODUCT(Product_id),
+  FOREIGN KEY (Supplier_id) REFERENCES SUPPLIER(Supplier_id)
+);
+

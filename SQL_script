@@ -1,0 +1,283 @@
+﻿
+/*Author: Nestor Hernandez
+Date: 04/23/2017 12:38 am
+COP 5725 - Principles of DBMS
+*/
+
+/*Create database*/
+CREATE DATABASE ecommerce;
+
+/*Make sure you are under the ecommerce database just created to run the next SQL statements*/
+
+/*Create tables*/
+
+CREATE TABLE CUSTOMER
+(
+  Customer_id BIGINT NOT NULL,
+  Email VARCHAR(40) NOT NULL,
+  Phone VARCHAR(20) NOT NULL,
+  FName VARCHAR(20) NOT NULL,
+  LName VARCHAR(20) NOT NULL,
+  PRIMARY KEY (Customer_id)
+);
+
+CREATE TABLE ADDRESS
+(
+  Street VARCHAR(100) NOT NULL,
+  City VARCHAR(100) NOT NULL,
+  State VARCHAR(20) NOT NULL,
+  Zip INT NOT NULL,
+  Preferred BOOLEAN NOT NULL,
+  Address_id BIGINT NOT NULL,
+  Customer_id BIGINT NOT NULL,
+  PRIMARY KEY (Address_id),
+  FOREIGN KEY (Customer_id) REFERENCES CUSTOMER(Customer_id)
+);
+
+CREATE TABLE BILLING
+(
+  CHName VARCHAR(40) NOT NULL,
+  Card_number BIGINT NOT NULL,
+  ExpMonth INT NOT NULL,
+  ExpYear INT NOT NULL,
+  Preferred BOOLEAN NOT NULL,
+  csv INT NOT NULL,
+  Street VARCHAR(100) NOT NULL,
+  City VARCHAR(100) NOT NULL,
+  State VARCHAR(20) NOT NULL,
+  Zip INT NOT NULL,
+  Bill_id BIGINT NOT NULL,
+  Customer_id BIGINT NOT NULL,
+  PRIMARY KEY (Bill_id),
+  FOREIGN KEY (Customer_id) REFERENCES CUSTOMER(Customer_id)
+);
+
+CREATE TABLE SUPPLIER
+(
+  Supplier_id BIGINT NOT NULL,
+  ContactFName VARCHAR(40) NOT NULL,
+  ContactLName VARCHAR(40) NOT NULL,
+  Email VARCHAR(40) NOT NULL,
+  Phone VARCHAR(40) NOT NULL,
+  SupplierName VARCHAR(50) NOT NULL,
+  Street VARCHAR(100) NOT NULL,
+  City VARCHAR(100) NOT NULL,
+  State VARCHAR(20) NOT NULL,
+  Zip INT NOT NULL,
+  PRIMARY KEY (Supplier_id)
+);
+
+CREATE TABLE CHECKOUT
+(
+  Checkout_id BIGINT NOT NULL,
+  Check_date TIMESTAMP NOT NULL,
+  Total_price_usd FLOAT NOT NULL,
+  Discount_usd FLOAT NOT NULL,
+  Bill_id BIGINT NOT NULL,
+  Customer_id BIGINT NOT NULL,
+  Address_id BIGINT NOT NULL,
+  PRIMARY KEY (Checkout_id),
+  FOREIGN KEY (Bill_id) REFERENCES BILLING(Bill_id),
+  FOREIGN KEY (Customer_id) REFERENCES CUSTOMER(Customer_id),
+  FOREIGN KEY (Address_id) REFERENCES ADDRESS(Address_id)
+);
+
+CREATE TABLE PRODUCT_CATEGORY
+(
+  CatName VARCHAR(100) NOT NULL,
+  Cat_id BIGINT NOT NULL,
+  Parent_Cat_id BIGINT,
+  PRIMARY KEY (Cat_id),
+  FOREIGN KEY (Parent_Cat_id) REFERENCES PRODUCT_CATEGORY(Cat_id)
+);
+
+CREATE TABLE PRODUCT
+(
+  Product_id BIGINT NOT NULL,
+  PName VARCHAR(100) NOT NULL,
+  Description VARCHAR(200) NOT NULL,
+  Price_usd FLOAT NOT NULL,
+  Stock BIGINT NOT NULL,
+  Picture VARCHAR(900) NOT NULL,
+  Cat_id BIGINT NOT NULL,
+  PRIMARY KEY (Product_id),
+  FOREIGN KEY (Cat_id) REFERENCES PRODUCT_CATEGORY(Cat_id)
+);
+
+CREATE TABLE ITEM_CHECK
+(
+  Quantity INT NOT NULL,
+  Line_price_usd FLOAT NOT NULL,
+  Item_number BIGINT NOT NULL,
+  Discount_usd FLOAT NOT NULL,
+  Product_id BIGINT NOT NULL,
+  Checkout_id BIGINT NOT NULL,
+  PRIMARY KEY (Item_number, Product_id, Checkout_id),
+  FOREIGN KEY (Product_id) REFERENCES PRODUCT(Product_id),
+  FOREIGN KEY (Checkout_id) REFERENCES CHECKOUT(Checkout_id)
+);
+
+CREATE TABLE CART_ITEM
+(
+  Item_number INT NOT NULL,
+  Quantity INT NOT NULL,
+  Line_price_usd FLOAT NOT NULL,
+  Discount_usd FLOAT NOT NULL,
+  Product_id BIGINT NOT NULL,
+  Customer_id BIGINT NOT NULL,
+  PRIMARY KEY (Item_number, Product_id, Customer_id),
+  FOREIGN KEY (Product_id) REFERENCES PRODUCT(Product_id),
+  FOREIGN KEY (Customer_id) REFERENCES CUSTOMER(Customer_id)
+);
+
+CREATE TABLE PRICE_HISTORY
+(
+  Price_usd FLOAT NOT NULL,
+  Till_date DATE NOT NULL,
+  Hist_id BIGINT NOT NULL,
+  Product_id BIGINT NOT NULL,
+  PRIMARY KEY (Hist_id, Product_id),
+  FOREIGN KEY (Product_id) REFERENCES PRODUCT(Product_id)
+);
+
+
+CREATE TABLE SUPPLIES
+(
+  Price_usd FLOAT NOT NULL,
+  Date DATE NOT NULL,
+  Product_id BIGINT NOT NULL,
+  Supplier_id BIGINT NOT NULL,
+  PRIMARY KEY (Product_id, Supplier_id),
+  FOREIGN KEY (Product_id) REFERENCES PRODUCT(Product_id),
+  FOREIGN KEY (Supplier_id) REFERENCES SUPPLIER(Supplier_id)
+);
+
+/* Insert data into tables */
+
+/*Customer table */
+
+INSERT INTO CUSTOMER (Customer_id, Email, Phone, FName, LName) VALUES
+    (73493993939232, 'reaganron@usa.gob', '786-897-44-33', 'Ronald', 'Reagan'),
+    (18934592402420, 'jlo@gmail.com', '309-222-41-32', 'James', 'Lopez'),
+    (90992948294028, 'r10ric@hotmail.com', '305-111-22-66', 'Ricardo', 'Alvarez'),
+    (39029284712031, 'daytona_al@outlook.com', '222-988-31-12', 'Amelia', 'Diaz'),
+    (67371937371918, 'hugo_pena@outlook.com', '549-343-22-11', 'Hugo', 'Pena');
+
+
+/* Supplier table */
+
+INSERT INTO SUPPLIER (Supplier_id,ContactFName, ContactLName, Email, Phone, SupplierName, Street, City, State, Zip) VALUES
+    (29300320213321, 'Hillary', 'Hernandez','hillaryher@robot.com', '674-789-66-44', 'Revista El Robot','11750 SW 16 STREET', 'Boca Raton', 'Florida',33432),
+    (88388284048284, 'Henry', 'Larson','hlarson@myhats.com', '343-456-99-88', 'My hats Inc','568 Broadway, 10th Floor', 'New York', 'New York' ,10012),
+    (76405928412002, 'Dayana', 'Mendoza','dmendoza@loreal.com', '312-124-91-12', 'Loreal','41 rue Martre', 'Boston', 'Massachusetts', 22323),
+    (20492393842421, 'Tao', 'Liung','liungf@homedepot.com', '984-094-33-22', 'Home Depot','Atlanta Store Support C', 'Atlanta', 'Georgia',11213),
+    (78283746163609, 'Bryant', 'Drew','bryantdrew@mystore.com', '637-764-90-33', 'My Store Inc','New Mexico Capitol', 'Santa Fe', 'New Mexico',87501);
+
+
+/* Product_Category  table */
+INSERT INTO PRODUCT_CATEGORY (Cat_id,CatName,Parent_Cat_id) VALUES
+(1,'Electronics',NULL),
+(2,'Televisions', 1),
+(3, 'Tube', 2),
+(4,'LCD', 2),
+(5,'Plasma', 2),
+(6, 'Clothing',NULL),
+(7,'Men Shoes',6),
+(8,'Men Shirts',6),
+(9,'Women Shoes',6),
+(10,'Women Shirts',6),
+(11,'Videogames',1),
+(12,'Nintendo 3DS', 11),
+(13,'Nintendo 2DS', 11),
+(14, 'Play Station 4',11),
+(15,'Nintendo Switch', 11),
+(16, 'Kitchen and Dining', NULL),
+(17, 'Kitchen Storage',16),
+(18, 'bar & wine',16),
+(19, 'serveware', 16),
+(20, 'bread boxes', 17),
+(21, 'canning', 17);
+
+
+/* Product table */
+
+INSERT INTO PRODUCT (Product_id,PName, Description, Price_usd, Stock, Picture, Cat_id) VALUES
+(4904,'Nintendo 3DS XL', 'Circle Pad, Front & Rear Cameras, Wi-Fi Capability.', 199.99, 56, '/home/pictures/elec/videogames/n3ds.png',12),
+(1230,'Lipper Acacia Rolltop Bread Box', 'Accommodate breads, rolls and pastries. Sturdy construction made of durable acacia.', 25.49, 100, '/home/pictures/kitchen/lipperaca.png',17),
+(2309,'Mens A+ Eddie Adult Sneakers - Black', ' Contrast trim, Perforation detail. 55% , Leather Fibers % 45 ', 34.99, 34, '/home/pictures/shoes/men/eddiaadultsneak.png',7),
+(7802,'LG 55" SUPER UHD 4K HDR 240Hz.', 'Smart TV WebOS 3.0 LCD TV-(55UH7700)', 699.99, 97, '/home/pictures/elec/tv/lg55tv.png',4),
+(7833,'VIZIO D-Series 65" ', 'Class UHD 120Hz Full Array LCD Smart TV - Black (D65u-D2)', 899.99, 102, '/home/pictures/elec/tv/vizio65tv.png',4);
+
+
+/* Address table */
+
+INSERT INTO ADDRESS (Address_id, Street, City, State, Zip, Preferred, Customer_id) VALUES
+(1233,'11752 SW 12TH ST', 'NYC', 'New York', 34333, TRUE, 73493993939232),
+(1212,'117 SW 120TH ST', 'NYC', 'New York', 34332, FALSE, 73493993939232),
+(1989,'11783 SW 14TH ST', 'Miami', 'Florida', 33183, TRUE, 18934592402420),
+(1100,'11732 Fountainbleau Blvd', 'Miami', 'Florida', 33123, TRUE, 90992948294028),
+(2321,'234 SW 23TH DR Brooklyn', 'NYC', 'New York', 12123, TRUE, 39029284712031),
+(3423,'907 SW 16th ST ', 'NYC', 'New York', 11563, TRUE, 67371937371918 );
+
+/* Billing table */
+
+INSERT INTO BILLING (Bill_id, CHName, Card_number, ExpMonth, ExpYear, Preferred, csv, Street, City, State, Zip, Customer_id) VALUES
+(4541, 'Ronald Reagan', 1093453675092376, 8, 2021, TRUE, 222, '11752 SW 12TH ST', 'NYC', 'New York', 34333, 73493993939232),
+(1233, 'James Lopez', 6409467209455378, 2, 2019, TRUE, 112, '11783 SW 14TH ST', 'Miami', 'Florida', 33183, 18934592402420),
+(4899, 'Ricardo Alvarez', 9300977649836455, 3, 2018, TRUE, 000, '11732 Fountainbleau Blvd', 'Miami', 'Florida', 33123, 90992948294028),
+(4313, 'Amelia Diaz', 3039278409223546, 2, 2018, TRUE, 230, '234 SW 23TH DR Brooklyn', 'NYC', 'New York', 12123, 39029284712031),
+(1512, 'Robert Abreu', 8737373909278345, 2, 2022, FALSE, 213, '11756 SW 17TH ST 309', 'NYC', 'New York', 12143, 39029284712031),
+(8897, 'Hugo Pena', 9829944526710463, 10, 2021, TRUE, 987, '907 SW 16th ST', 'NYC', 'New York', 11563, 67371937371918);
+
+
+/* Supplies-relation table */
+
+INSERT INTO SUPPLIES (Supplier_id, Product_id, Price_usd, Date) VALUES
+(29300320213321, 4904, 178.99, '2017-03-26'),
+(29300320213321, 7802, 654.00, '2017-04-21'),
+(88388284048284, 2309, 33.56, '2017-04-19'),
+(76405928412002, 2309, 34.09, '2016-10-30'),
+(20492393842421, 1230, 23.09, '2017-03-12'),
+(20492393842421, 7802, 670.00, '2017-02-12'),
+(20492393842421, 7833, 867.99, '2017-02-22'),
+(78283746163609, 7802, 645.99, '2017-02-27'),
+(78283746163609, 7833, 845.99, '2017-02-27');
+
+
+/* Price_History table */
+INSERT INTO PRICE_HISTORY(Product_id, Hist_id, Price_usd, Till_date) VALUES
+(4904, 1 , 189.00, '2017-01-20'),
+(4904, 2 , 195.00, '2017-02-19'),
+(1230, 1, 22.99, '2017-01-31'),
+(1230, 2, 24.99, '2017-02-12'),
+(7802,1, 676.00, '2017-01-30'),
+(7833,1, 890.34, '2017-04-11');
+
+/* checkout table */
+INSERT INTO CHECKOUT (Checkout_id, Check_date, Customer_id, Bill_id, Address_id, Total_price_usd, Discount_usd) VALUES
+(120023, current_timestamp, 73493993939232, 4541, 1233, 899.00,0.00), /* 1 tv*/
+(298382, current_timestamp, 18934592402420, 1233, 1989, 50.98,0.00), /* 2 kitchen items */
+(782827, current_timestamp, 90992948294028, 4899, 1100, 190.99, 10.00), /* 1 nintendo with 10 discount*/
+(440931, current_timestamp, 39029284712031, 4313,2321, 734.98, 0.00), /* 1 tv and shoes*/
+(908484, current_timestamp, 67371937371918, 8897,3423, 899.99 ,0.00); /* expensive tv */
+
+/* Item_check table */
+INSERT INTO ITEM_CHECK (Checkout_id, Product_id, Item_number, Quantity, Line_price_usd, Discount_usd) VALUES
+(120023, 7833, 1, 1, 899.00,0.00),
+(298382, 1230, 1, 2, 50.98,0.00),
+(782827, 4904, 1, 1, 199.99,10.00),
+(440931, 7802, 1, 1, 699.99, 0.00),
+(440931, 2309, 2, 1, 34.99, 0.00),
+(908484, 7833, 1, 1, 899.99, 0.00);
+
+/* Cart_Item table */
+INSERT INTO CART_ITEM(Customer_id, Product_id, Item_number, Quantity, Line_price_usd, Discount_usd) VALUES
+(73493993939232, 1230, 1, 1, 25.49, 0.00),
+(73493993939232, 7802, 2, 2, 1399.98, 0.00),
+(18934592402420, 4904, 1, 1, 199.99, 10.00),
+(39029284712031, 7833, 1, 1, 899.99, 0.00),
+(39029284712031, 4904, 2, 1, 199.99, 10.00),
+(67371937371918, 1230, 1, 1, 25.49, 0.00);
+
+
+
